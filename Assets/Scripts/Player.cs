@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
 
-    #region Variables
+#region Variables
     //Player
     Animation anim;
     public float movementSpeed;
+    public float turningSpeed;
     public float attackTimer;
     public float attackRange;
     public float minDamage;
@@ -17,6 +18,7 @@ public class Player : MonoBehaviour {
     private bool attacking;
     private bool attacked;
     private float currentAttackTimer;
+
     //PMR
     public GameObject playerMovePoint;
     private Transform pmr;
@@ -26,6 +28,7 @@ public class Player : MonoBehaviour {
     //Enemy Variables
     private bool triggeringEnemy;
     private GameObject _enemy;
+
 #endregion
 
 #region Core Game Functions
@@ -39,6 +42,7 @@ public class Player : MonoBehaviour {
     void Update()
     {
         HandleClickToMove();
+        HandleWASDMovement();
         HandleBasicAttack();
     }
     #endregion
@@ -77,7 +81,10 @@ public class Player : MonoBehaviour {
                 }
             }
         }
-
+        if (followingEnemy && Input.GetKeyDown(KeyCode.Escape))
+        {
+            followingEnemy = false;
+        }
         if (moving)
         {
             if (followingEnemy)
@@ -106,6 +113,19 @@ public class Player : MonoBehaviour {
         {
             moving = false;
         }
+    }
+
+    void HandleWASDMovement()
+    {
+        float horizontal = Input.GetAxis("Horizontal") * turningSpeed * Time.deltaTime;
+        transform.Rotate(0, horizontal, 0);
+        float vertical = Input.GetAxis("Vertical") * movementSpeed * Time.deltaTime;
+        transform.Translate(0, 0, vertical);
+        if (horizontal != 0 || vertical !=0)
+        {
+            anim.CrossFade("ElfArcher_Walk");
+        }
+        
     }
 
     void HandleBasicAttack()
